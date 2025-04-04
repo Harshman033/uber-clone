@@ -22,61 +22,83 @@ const userSchema = mongoose.Schema({
     lowercase : true,
     trim : true
     },
-    phoneNumber : {
-    type : String,
-    required : true,
-    unique : true
-    },
+    // phoneNumber : {
+    // type : String,
+    // unique : true
+    // },
     password : {
     type : String,
-    required : true
+    required : true,
+    select : false
     },
     socketId : {
     type : String
     },
-    profilePicture : {
+    refreshToken : {
         type : String,
-    },
-    role : {
-    type : String,
-    enum : ["ride", "driver"],
-    required : true,
-    default : "rider"
-    },
-    location : {
-        type : String,
-    },
-    paymentMethod : {
-
-    },
-    walletBalance : {
-      type : mongoose.Schema.Types.Decimal128,
-      default : 0
-    },
-    rideHistory : [ {
-        type : mongoose.Schema.ObjectId,
-        ref : "Ride"
-        
-    }],
-    isVerified : {
-     type : Boolean,
-     default : false
+        select : false
     }
+    // profilePicture : {
+    //     type : String,
+    // },
+    // role : {
+    // type : String,
+    // enum : ["ride", "driver"],
+    // required : true,
+    // default : "rider"
+    // },
+    // location : {
+    //     type : String,
+    // },
+    // paymentMethod : {
+
+    // },
+    // walletBalance : {
+    //   type : mongoose.Schema.Types.Decimal128,
+    //   default : 0
+    // },
+    // rideHistory : [ {
+    //     type : mongoose.Schema.ObjectId,
+    //     ref : "Ride"
+        
+    // }],
+    // isVerified : {
+    //  type : Boolean,
+    //  default : false
+    // }
 }, {timestamps : true});
 
 
-userSchema.pre('save', async function(next){
-    if(this.isModified('password')) return next();
+userSchema.pre('save', async function (next){
+    console.log("Inside pre-save middleware...");
 
-    this.password = await bcrypt.hash(this.password, 10);
-    next()
+    if (!this.isModified("password")) return next(); 
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        console.log("Password hashed successfully!");
+        next();
+    } catch (error) {
+        console.error("Error hashing password:", error);
+        next(error);
+    }
+});
+
+userSchema.set("toJSON", {
+    transform : function (doc, ret){
+        delete ret.password;
+        delete ret.refreshToken;
+        return ret;
+    }
 })
+
 
 userSchema.methods.comparePassword = async function(password){
     return await bcrypt.compare(password, this.password)
 }
 
-userSchema.methods.generateAccessToken = async function(){
+userSchema.methods.generateAccessToken =  function(){
     return jwt.sign(
         {
           _id : this._id,
@@ -92,8 +114,8 @@ userSchema.methods.generateAccessToken = async function(){
     )
 }
 
-userSchema.methods.generateRefreshToken = async function (){
-    return jwt.sign(
+userSchema.methods.generateRefreshToken =  function (){
+    const token = jwt.sign(
         {
           _id : this._id,
         },
@@ -103,6 +125,9 @@ userSchema.methods.generateRefreshToken = async function (){
         }
     
     )
+    console.log("Generated Refresh Token:", token);
+    console.log("Type of Refresh Token:", typeof token);
+    return token;
 }
 
 export const User = mongoose.model('User', userSchema);
