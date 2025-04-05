@@ -1,5 +1,5 @@
 import mongoose from  'mongoose';
-import jwt from 'jsonwebtoken';
+c
 import bcrypt from 'bcryptjs'
 
 const userSchema = mongoose.Schema({
@@ -22,10 +22,6 @@ const userSchema = mongoose.Schema({
     lowercase : true,
     trim : true
     },
-    // phoneNumber : {
-    // type : String,
-    // unique : true
-    // },
     password : {
     type : String,
     required : true,
@@ -38,6 +34,10 @@ const userSchema = mongoose.Schema({
         type : String,
         select : false
     }
+    // phoneNumber : {
+    // type : String,
+    // unique : true
+    // },
     // profilePicture : {
     //     type : String,
     // },
@@ -125,8 +125,6 @@ userSchema.methods.generateRefreshToken =  function (){
         }
     
     )
-    console.log("Generated Refresh Token:", token);
-    console.log("Type of Refresh Token:", typeof token);
     return token;
 }
 
