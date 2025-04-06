@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const captainSchema = new mongoose.Schema({
     fullName : {
@@ -129,4 +131,4 @@ captainSchema.methods.generateRefreshToken =  function (){
     return token;
 }
 
-export const Captain = mongoose.model("Captian", captainSchema)
+export const Captain = mongoose.model("Captain", captainSchema)

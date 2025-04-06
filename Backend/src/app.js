@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { router as userRouter} from './routes/user.routes.js';
+import { router as captainRouter } from './routes/captain.routes.js';
 import cookieParser from 'cookie-parser'
 
 
@@ -23,5 +24,8 @@ app.use(express.json());
 
 
 app.use('/api/v1/users', userRouter)
+
+
+app.use('/api/v1/captains', captainRouter)
 
 export default app;
