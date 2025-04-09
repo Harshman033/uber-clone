@@ -5,6 +5,7 @@ import { ApiError } from "./ApiError.js";
 export const generateAccessAndRefreshToken = async (email)=>{
     try {
         const user = await User.findOne({email});
+        console.log("user in tokenfn:", user)
     const accessToken = user.generateAccessToken();
     const refreshToken = user.generateRefreshToken();
     

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {body} from 'express-validator'
 import { verifyJwt } from '../../middlewares/auth.middleware.js';
-import { registerCaptain } from '../controllers/captain.controller.js';
+import { loginCaptain, registerCaptain } from '../controllers/captain.controller.js';
 
 const router = Router();
 
@@ -17,6 +17,13 @@ router.route('/register').post([
 
 registerCaptain
 
+);
+
+router.route('/login').post([
+body('email').isEmail().withMessage('Invalid email'),
+body(`password`).isLength({min:6}).withMessage('Password should be of 6 characters atleast'),
+],
+loginCaptain
 )
 
 export {router}
