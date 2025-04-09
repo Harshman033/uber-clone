@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {body} from 'express-validator'
-import { verifyJwt } from '../../middlewares/auth.middleware.js';
-import { loginCaptain, registerCaptain } from '../controllers/captain.controller.js';
+import { verifyJwt, verifyJwtForCaptain } from '../../middlewares/auth.middleware.js';
+import { loginCaptain, logoutCaptain, registerCaptain } from '../controllers/captain.controller.js';
 
 const router = Router();
 
@@ -25,5 +25,11 @@ body(`password`).isLength({min:6}).withMessage('Password should be of 6 characte
 ],
 loginCaptain
 )
+
+router.route('/logout').post(verifyJwtForCaptain, logoutCaptain);
+
+
+
+
 
 export {router}

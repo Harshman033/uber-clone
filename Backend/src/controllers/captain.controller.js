@@ -74,6 +74,47 @@ const loginCaptain = asyncHandler(async (req, res) =>{
 });
 
 const logoutCaptain = asyncHandler(async (req, res)=>{
-    const user = req.user;
+   try {
+     const captain = await Captain.findByIdAndUpdate(
+         req.captain._id,
+         {
+             $set : {refreshToken:undefined}
+         },
+         {
+            new : true
+         }
+     )
+
+     if(!captain) throw new ApiError(401, "Unauthorized request");
+
+    const options = {
+        httpOnly : true,
+        secure : true
+    }
+
+ 
+     return res.status(200)
+     .clearCookie("refreshToken", options)
+     .clearCookie("accessToken", options)
+     .json(
+        new ApiResponse(200, {}, "User logged out successfully!")
+     )
+   } catch (error) {
+    throw new ApiError(500, error.message || "Something went wrong while logging out the captain")
+   }
+
+});
+
+
+const captainProfile = asyncHandler(async(req, res)=>{
+   try {
+     const captain = req.captain;
+     return res.status(200)
+     .json(
+        new ApiResponse(200, captain, "captain details fetched successfully!")
+     )
+   } catch (error) {
+    throw new ApiError(500, error.message || "Something went wrong while fetching the captain details")
+   }
 })
-export {registerCaptain, loginCaptain};
+export {registerCaptain, loginCaptain, logoutCaptain};
