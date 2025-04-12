@@ -116,5 +116,6 @@ const captainProfile = asyncHandler(async(req, res)=>{
    } catch (error) {
     throw new ApiError(500, error.message || "Something went wrong while fetching the captain details")
    }
-})
-export {registerCaptain, loginCaptain, logoutCaptain};
+});
+
+export {registerCaptain, loginCaptain, logoutCaptain, captainProfile};

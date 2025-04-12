@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {body} from 'express-validator'
 import { verifyJwt, verifyJwtForCaptain } from '../../middlewares/auth.middleware.js';
-import { loginCaptain, logoutCaptain, registerCaptain } from '../controllers/captain.controller.js';
+import { captainProfile, loginCaptain, logoutCaptain, registerCaptain } from '../controllers/captain.controller.js';
 
 const router = Router();
 
@@ -28,8 +28,7 @@ loginCaptain
 
 router.route('/logout').post(verifyJwtForCaptain, logoutCaptain);
 
-
-
+router.route('/captain-profile').get(verifyJwtForCaptain, captainProfile);
 
 
 export {router}
