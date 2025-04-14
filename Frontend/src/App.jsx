@@ -1,5 +1,5 @@
 import React from 'react'
-import { Routes } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import UserRegister from './pages/UserRegister'
 import UserLogin from './pages/UserLogin'
@@ -9,11 +9,14 @@ import CaptainLogin from './pages/CaptainLogin'
 function App() {
   return (
     <div>
-      <Routes to='/' element={<Home />} />
-      <Routes to='/user-register' element={<UserRegister />} />
-      <Routes to='/user-login' element={<UserLogin />} />
-      <Routes to='/captain-register' element={<CaptainRegister />} />
-      <Routes to='/captain-login' element={<CaptainLogin />} />
+      <Routes>
+      <Route path='/' element={<Home />} />
+      <Route path='/user-register' element={<UserRegister />} />
+      <Route path='/user-login' element={<UserLogin />} />
+      <Route path='/captain-register' element={<CaptainRegister />} />
+      <Route path='/captain-login' element={<CaptainLogin />} />
+      </Routes>
+     
     </div>
   )
 }
