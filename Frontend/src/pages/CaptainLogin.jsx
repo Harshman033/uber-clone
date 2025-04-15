@@ -13,9 +13,10 @@ function CaptainLogin() {
    setCaptainData({email, password})
   }
   return (
-    <div className='flex flex-col justify-between p-7 h-screen'>
+    <div className=' w-full h-full m-0 p-0  md:bg-black md:flex md:justify-center md:items-center'>
+    <div className='flex flex-col justify-between p-7 h-screen bg-white md:w-1/3'>
       <div  >
-      <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="Uber logo" className='w-16 h-auto mt-4  mb-8' />
+      <Link to='/'><img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="Uber logo" className='w-16 h-auto mt-4  mb-8' /></Link>
       <form action="submit" onSubmit={submitHandler} className='flex flex-col justify-between'>
 
         <label htmlFor="" className='text-lg font-semibold'>Enter your email</label>
@@ -36,8 +37,9 @@ function CaptainLogin() {
         <Link to='/user-login'  className=' flex justify-center items-center bg-white border border-black rounded p-2'> Login as User </Link>
       </form>
     </div>
-    <div >
+    <div className='text-center'>
      Don't have an account? <Link to='/captain-register' className='text-blue-700'> Register Now</Link>
+    </div>
     </div>
     </div>
   )
