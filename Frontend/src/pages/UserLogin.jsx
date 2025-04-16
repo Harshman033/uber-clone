@@ -1,16 +1,33 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { useState, useContext } from 'react'
+import { UserContext } from '../context/UserContext';
+import {AuthContext} from '../context/AuthContext';
+import api from '../api/api';
 
 function UserLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userData, setUserData] =useState({});
-  
+  const {setAuthenticated} = useContext(AuthContext)
 
-  const submitHandler = (e)=>{
+  const {setUser} = useContext(UserContext);
+  const navigate = useNavigate();
+  
+  const submitHandler = async(e)=>{
    e.preventDefault();
-   setUserData({email, password})
+   const user = {email, password};
+
+   await api.post('/users/login', user);
+
+   const res = await api.get('/users/me');
+   if(res.status === 200){
+    setAuthenticated(true);
+    const data = res.data;
+    setUser(data.user);
+
+    navigate('/home')
+
+   }
   }
   return (
     <div className=' w-full h-full m-0 p-0  md:bg-black md:flex md:justify-center md:items-center'>

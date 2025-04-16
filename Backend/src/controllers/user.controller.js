@@ -20,7 +20,8 @@ const registerUser = asyncHandler(async (req, res)=>{
 
     const options = {
         httpOnly : true,
-        secure : true
+        secure : true,
+        maxAge :24 * 60 * 60 * 1000
     }
     
     return res.status(200)
@@ -56,7 +57,8 @@ const loginUser = asyncHandler(async (req, res)=>{
 
     const options = {
         httpOnly : true,
-        secure : true
+        secure : true,
+        maxAge :24 * 60 * 60 * 1000
     }
    
     return res.status(200)
@@ -86,7 +88,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     
  const options = {
     httpOnly : true,
-    secure : true
+    secure : true,
   }
  
   return res.status(200)
@@ -114,7 +116,49 @@ const userProfile = asyncHandler(async (req, res) => {
    }
 })
 
+const regenerateAccessToken = asyncHandler(async (req, res) => {
+    try {
+      const incomingToken = req.cookies?.refreshToken || req.body.refreshToken;
+   
+      if(!incomingToken){
+      throw new ApiError(401, "Unauthorised request");
+      }
+   
+      const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET)
+   
+      const user = await User.findById(decodedToken?._id)
+   
+      if(!user){
+         throw new ApiError(401, "Unauthorised request");
+      }
+   
+      if(incomingToken !== user?.refreshToken){
+         throw new ApiError(401, "Refresh token expired or used");
+      }
+   
+      const {refreshToken, accessToken} = await generateAccessAndRefreshToken(user._id)
+   
+      const options = {
+         httpOnly : true,
+         secure : true,
+         maxAge :24 * 60 * 60 * 1000
+      }
+   
+      return res.status(200)
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(200,
+         {accessToken, refreshToken},
+         "Access token regenerated successfully!"
+   
+        )
+      )
+    } catch (error) {
+     throw new ApiError(401, error?.message || "invalid refresh token")
+    }
+  })
 
 
 
-export {registerUser, loginUser, logoutUser, userProfile};
+export {registerUser, loginUser, logoutUser, userProfile, regenerateAccessToken};

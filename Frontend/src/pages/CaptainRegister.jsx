@@ -12,7 +12,7 @@ function CaptainRegister() {
 
   const submitHandler = (e)=>{
    e.preventDefault();
-   setCaptainData({name : {firstName, lastName}, email, password});
+   setCaptainData({fullName : {firstName, lastName}, email, password});
    setEmail('');
    setPassword('');
    setFirstName('');

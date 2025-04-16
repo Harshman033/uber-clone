@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {body} from 'express-validator'
-import { loginUser, logoutUser, registerUser, userProfile } from '../controllers/user.controller.js';
+import { loginUser, logoutUser, regenerateAccessToken, registerUser, userProfile } from '../controllers/user.controller.js';
 import { verifyJwt } from '../../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -21,6 +21,10 @@ loginUser);
 
 router.route('/logout').post( verifyJwt, logoutUser);
 
+router.route("/me").get(verifyJwt, userProfile)
+
 router.route('/user-profile').get( verifyJwt, userProfile);
+
+router.route('/regenerate-token').post(regenerateAccessToken);
 
 export {router}

@@ -5,8 +5,10 @@ import { asyncHandler } from '../src/utils/asyncHandler.js';
 import { Captain } from '../src/models/captain.model.js';
 
 export const verifyJwt = asyncHandler(async (req, res, next) =>{
+    console.log(req)
+    console.log(req.cookies)
 try {
-    const token = req.cookies?.accessToken || req.headers("Authorization").replace("Bearer ", "");
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
 
     if(!token)throw new ApiError(401, "Unauthorized request");
    

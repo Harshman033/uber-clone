@@ -1,18 +1,39 @@
 import React from 'react'
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios'
+import { UserContext } from '../context/UserContext'
 
 function UserRegister() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userData, setUserData] =useState({});
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+
+  const {setUser} = useContext(UserContext);
+  const navigate = useNavigate();
   
 
-  const submitHandler = (e)=>{
+  const submitHandler = async(e)=>{
    e.preventDefault();
-   setUserData({name : {firstName, lastName}, email, password});
+   const newUser = {
+    fullName : {
+      firstName :firstName,
+      lastName : lastName
+      },
+     email,
+     password
+    };
+    
+  console.log(newUser)
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser, {withCredentials : true});
+
+    if(response.status === 200){
+     const data = response.data;
+     setUser(data.user)
+     navigate('/home')
+    }
+
    setEmail('');
    setPassword('');
    setFirstName('');
@@ -33,14 +54,14 @@ function UserRegister() {
           setFirstName(e.target.value)
         }}
         />
-        <input required type="text" value={email} placeholder='last name' className='bg-slate-100 rounded px-4 py-2 w-full mb-7 '
+        <input required type="text" value={lastName} placeholder='last name' className='bg-slate-100 rounded px-4 py-2 w-full mb-7 '
          onChange={(e)=>{
           setLastName(e.target.value)
         }}
         /></div>
 
       <label htmlFor="" className='text-lg font-semibold'>Enter your email</label>
-       <input required type="email" value={lastName} placeholder='email@example.com' className='bg-slate-100 rounded px-4 py-2 w-full mb-7 '
+       <input required type="email" value={email} placeholder='email@example.com' className='bg-slate-100 rounded px-4 py-2 w-full mb-7 '
          onChange={(e)=>{
           setEmail(e.target.value)
         }}
