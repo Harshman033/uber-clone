@@ -30,5 +30,7 @@ router.route('/logout').post(verifyJwtForCaptain, logoutCaptain);
 
 router.route('/captain-profile').get(verifyJwtForCaptain, captainProfile);
 
+router.route('/me').get(verifyJwtForCaptain, captainProfile);
+
 
 export {router}

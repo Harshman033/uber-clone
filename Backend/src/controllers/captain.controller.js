@@ -20,7 +20,8 @@ const registerCaptain = asyncHandler(async (req, res)=>{
 
     const options = {
         httpOnly : true,
-        secure : true
+        secure : true,
+        maxAge :24 * 60 * 60 * 1000
     }
     
     return res.status(200)
@@ -61,7 +62,8 @@ const loginCaptain = asyncHandler(async (req, res) =>{
     
     const options = {
         httpOnly : true,
-        secure : true
+        secure : true,
+        maxAge :24 * 60 * 60 * 1000
     }
 
     return res.status(200)
@@ -89,7 +91,7 @@ const logoutCaptain = asyncHandler(async (req, res)=>{
 
     const options = {
         httpOnly : true,
-        secure : true
+        secure : true,
     }
 
  

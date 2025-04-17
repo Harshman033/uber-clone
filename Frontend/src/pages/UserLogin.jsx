@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useState, useContext } from 'react'
 import { UserContext } from '../context/UserContext';
 import {AuthContext} from '../context/AuthContext';
-import api from '../api/api';
+import userApi from '../api/userApi';
 
 function UserLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {setAuthenticated} = useContext(AuthContext)
+  const {setAuthenticated} = useContext(AuthContext);
 
   const {setUser} = useContext(UserContext);
   const navigate = useNavigate();
@@ -17,15 +17,15 @@ function UserLogin() {
    e.preventDefault();
    const user = {email, password};
 
-   await api.post('/users/login', user);
+   await userApi.post('/users/login', user);
 
-   const res = await api.get('/users/me');
+   const res = await userApi.get('/users/me');
    if(res.status === 200){
     setAuthenticated(true);
     const data = res.data;
     setUser(data.user);
 
-    navigate('/home')
+    navigate('/user-home')
 
    }
   }

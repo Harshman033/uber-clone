@@ -1,8 +1,10 @@
 import React from 'react'
 import { useState, useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { UserContext } from '../context/UserContext'
+import userApi from '../api/userApi';
+import { AuthContext } from '../context/AuthContext';
 
 function UserRegister() {
   const [email, setEmail] = useState('');
@@ -11,6 +13,7 @@ function UserRegister() {
   const [lastName, setLastName] = useState('');
 
   const {setUser} = useContext(UserContext);
+  const {setAuthenticated} = useContext(AuthContext);
   const navigate = useNavigate();
   
 
@@ -26,12 +29,15 @@ function UserRegister() {
     };
     
   console.log(newUser)
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser, {withCredentials : true});
+    await userApi.post('/users/register', newUser);
 
-    if(response.status === 200){
-     const data = response.data;
+    const res = userApi.get('/users/me')
+
+    if(res.status === 200){
+     const data = res.data;
      setUser(data.user)
-     navigate('/home')
+     setAuthenticated(true)
+     navigate('/user-home')
     }
 
    setEmail('');

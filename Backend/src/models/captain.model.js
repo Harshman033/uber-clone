@@ -7,12 +7,13 @@ const captainSchema = new mongoose.Schema({
         firstName : {
         type : String,
         required : true,
-        minLength : [ 3, "First name should be atleast 3 characters"
-        ]
+        minLength : [ 3, "First name should be atleast 3 characters"],
+        maxLength : [20, "first name should not exceed 20 characters"]
         },
         lastName : {
         type : String,
-        minLength : [ 3, "Last name should be atleast 3 characters"]
+        minLength : [ 3, "Last name should be atleast 3 characters"],
+        maxLength : [20, "last name should not exceed 20 characters"]
         }
         },
         email : {
@@ -43,17 +44,19 @@ const captainSchema = new mongoose.Schema({
             color : {
                 type : String,
                 required : true,
-                minLength : [3, "Color must be atleast of 3 characters"]
+                minLength : [3, "Color must be atleast of 3 characters"],
+                maxLength : [20, "color should not exceed 20 characters"]
             },
             plate : {
                 type : String, 
                 required : true,
-                minLength : [3, "Plate number must be atleast of 3 characters"]
+                minLength : [3, "Plate number must be atleast of 3 characters"],
+                maxLength : [20, "Plate number should not exceed 20 characters"]
             },
             capacity : {
                 type : Number, 
                 required : true,
-                minLength : [1, "Capacity must be atleast 1"]
+                min : [1, "Capacity must be atleast 1"]
             },
             vehicleType : {
                 type : String, 

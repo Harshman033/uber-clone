@@ -1,16 +1,32 @@
 import React from 'react'
-import { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { useState, useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import captainApi from '../api/captainApi';
+import { CaptainAuthContext } from '../context/CaptainAuthContext';
+import { CaptainContext } from '../context/CaptainContext';
 
 function CaptainLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [captainData, setCaptainData] =useState({});
-  
 
-  const submitHandler = (e)=>{
+  const {setAuthenticated} = useContext(CaptainAuthContext);
+  const {setCaptain} = useContext(CaptainContext);
+
+  const navigate = useNavigate();
+  
+  const submitHandler = async (e)=>{
    e.preventDefault();
-   setCaptainData({email, password})
+   const captain = {email, password}
+   await captainApi.post('/captains/login', captain);
+   const res = await captainApi.get('/captains/me');
+   
+   if(res.status === 200){
+    const data = res.data;
+    setCaptain(data.captain);
+    setAuthenticated(true);
+
+    navigate('/captain-home')
+   }
   }
   return (
     <div className=' w-full h-full m-0 p-0  md:bg-black md:flex md:justify-center md:items-center'>

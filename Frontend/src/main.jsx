@@ -5,16 +5,23 @@ import './index.css'
 import App from './App.jsx'
 import UserContextProvider from './context/UserContext.jsx'
 import AuthProvider from './context/AuthContext.jsx'
+import CaptainContextProvider from './context/CaptainContext.jsx'
+import CaptainAuthProvider from './context/CaptainAuthContext.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-    <UserContextProvider>
-    <BrowserRouter>
+      <CaptainAuthProvider>
+        <UserContextProvider>
+      <CaptainContextProvider>
+        <BrowserRouter>
     <App />
     </BrowserRouter>
+      </CaptainContextProvider>
     </UserContextProvider>
+      </CaptainAuthProvider>
+    
     </AuthProvider>
   </StrictMode>,
 )

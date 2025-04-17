@@ -1,5 +1,5 @@
 import React , {createContext, useState, useEffect} from 'react'
-import api from '../api/api'
+import userApi from '../api/userApi';
 
 export const AuthContext = createContext();
 
@@ -10,7 +10,7 @@ const [loading, setLoading] = useState(true);
 useEffect(()=>{
     const checkAuth = async () =>{
         try {
-            const response = await api.get('/users/me');
+            const response = await userApi.get('/users/me');
             console.log('Auth response:', response);
             setAuthenticated(true);
         } catch (error) {
