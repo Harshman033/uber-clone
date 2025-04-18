@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import {body} from 'express-validator'
 import { verifyJwt, verifyJwtForCaptain } from '../../middlewares/auth.middleware.js';
-import { captainProfile, loginCaptain, logoutCaptain, registerCaptain } from '../controllers/captain.controller.js';
+import { captainProfile, loginCaptain, logoutCaptain, registerCaptain, regenerateAccessTokenForCaptain} from '../controllers/captain.controller.js';
 
 const router = Router();
 
@@ -31,6 +31,8 @@ router.route('/logout').post(verifyJwtForCaptain, logoutCaptain);
 router.route('/captain-profile').get(verifyJwtForCaptain, captainProfile);
 
 router.route('/me').get(verifyJwtForCaptain, captainProfile);
+
+router.route('/regenerate-token').post(regenerateAccessTokenForCaptain);
 
 
 export {router}

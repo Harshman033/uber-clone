@@ -5,10 +5,10 @@ import { asyncHandler } from '../src/utils/asyncHandler.js';
 import { Captain } from '../src/models/captain.model.js';
 
 export const verifyJwt = asyncHandler(async (req, res, next) =>{
-    console.log(req)
-    console.log(req.cookies)
+    console.log('req.cookies inside jwtVerify', req.cookies)
 try {
-    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    const token = req.cookies?.user_accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    console.log('access token inside verify Jwt', token)
 
     if(!token)throw new ApiError(401, "Unauthorized request");
    
@@ -29,7 +29,8 @@ try {
 
 export const verifyJwtForCaptain = asyncHandler(async(req, res, next)=>{
 try {
-    const token = req.cookies?.accessToken || req.header("Authorization").replace("Brearer ", "");
+    const token = req.cookies?.captain_accessToken || req.header("Authorization").replace("Brearer ", "");
+
     if(!token) throw new ApiError(401, "Unauthorized request");
 
     const verifiedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);

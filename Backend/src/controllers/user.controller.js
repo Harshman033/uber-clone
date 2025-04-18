@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import {ApiResponse} from '../utils/ApiResponse.js'
 import { createUser } from "../services/user.service.js";
 import { generateAccessAndRefreshToken } from "../utils/tokenGenerator.js";
+import jwt from 'jsonwebtoken'
 
 const registerUser = asyncHandler(async (req, res)=>{
     const validationResults = validationResult(req);
@@ -21,16 +22,20 @@ const registerUser = asyncHandler(async (req, res)=>{
     const options = {
         httpOnly : true,
         secure : true,
-        maxAge :24 * 60 * 60 * 1000
+        maxAge: 1 * 60 * 1000 
     }
     
     return res.status(200)
-   .cookie("accessToken", accessToken, options)
-   .cookie("refreshToken", refreshToken, options)
+   .cookie("user_accessToken", accessToken, options)
+   .cookie("user_refreshToken", refreshToken, {
+      httpOnly : true,
+      secure : true,
+      maxAge: 7 * 24 * 60 * 60 * 1000
+   })
    .json(
    new ApiResponse(200,
       {
-         user, accessToken
+         user
       },
       "User registered successfully!"
    )
@@ -58,16 +63,20 @@ const loginUser = asyncHandler(async (req, res)=>{
     const options = {
         httpOnly : true,
         secure : true,
-        maxAge :24 * 60 * 60 * 1000
+        maxAge: 1 * 60 * 1000  //1 minute
     }
    
     return res.status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("user_accessToken", accessToken, options)
+    .cookie("user_refreshToken", refreshToken, {
+      httpOnly : true,
+        secure : true,
+        maxAge: 7 * 24 * 60 * 60 * 1000
+    })
     .json(
        new ApiResponse(200,
           {
-             user, accessToken
+             user
           },
           "User logged in successfully!"
        )
@@ -92,8 +101,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
  
   return res.status(200)
-  .clearCookie("accessToken", options)
-  .clearCookie("refreshToken", options)
+  .clearCookie("user_accessToken", options)
+  .clearCookie("user_refreshToken", options)
   .json(
     new ApiResponse(200, {}, "User logged out successfully!")
   )
@@ -118,38 +127,38 @@ const userProfile = asyncHandler(async (req, res) => {
 
 const regenerateAccessToken = asyncHandler(async (req, res) => {
     try {
-      const incomingToken = req.cookies?.refreshToken || req.body.refreshToken;
+      const incomingToken = req.cookies?.user_refreshToken;
    
       if(!incomingToken){
       throw new ApiError(401, "Unauthorised request");
       }
    
-      const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET)
+      const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
+      console.log('decoded token inside user', decodedToken)
    
-      const user = await User.findById(decodedToken?._id)
-   
+      const user = await User.findById(decodedToken?._id).select("+refreshToken")
+
       if(!user){
          throw new ApiError(401, "Unauthorised request");
       }
-   
       if(incomingToken !== user?.refreshToken){
+         console.log('incomingToken inside user', incomingToken, 'user.refreshToken',  user?.refreshToken)
          throw new ApiError(401, "Refresh token expired or used");
       }
-   
-      const {refreshToken, accessToken} = await generateAccessAndRefreshToken(user._id)
+      const accessToken = user.generateAccessToken();
+      console.log('generated access token inside user', accessToken)
    
       const options = {
          httpOnly : true,
          secure : true,
-         maxAge :24 * 60 * 60 * 1000
+         maxAge :1 * 60 * 1000
       }
    
       return res.status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", refreshToken, options)
+      .cookie("user_accessToken", accessToken, options)
       .json(
         new ApiResponse(200,
-         {accessToken, refreshToken},
+         {accessToken},
          "Access token regenerated successfully!"
    
         )

@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiError.js";
 import {ApiResponse} from '../utils/ApiResponse.js';
 import { generateAccessAndRefreshTokenForCaptain } from "../utils/tokenGenerator.js";
 import { createCaptain } from "../services/captain.service.js";
+import jwt from 'jsonwebtoken'
 
 const registerCaptain = asyncHandler(async (req, res)=>{
     const validationResults = validationResult(req);
@@ -25,8 +26,12 @@ const registerCaptain = asyncHandler(async (req, res)=>{
     }
     
     return res.status(200)
-   .cookie("accessToken", accessToken, options)
-   .cookie("refreshToken", refreshToken, options)
+   .cookie("captain_accessToken", accessToken, options)
+   .cookie("captain_refreshToken", refreshToken, {
+    httpOnly : true,
+      secure : true,
+      maxAge: 7 * 24 * 60 * 60 * 1000
+  })
    .json(
    new ApiResponse(200,
       {
@@ -67,8 +72,12 @@ const loginCaptain = asyncHandler(async (req, res) =>{
     }
 
     return res.status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("captain_accessToken", accessToken, options)
+    .cookie("captain_refreshToken", refreshToken, {
+        httpOnly : true,
+          secure : true,
+          maxAge: 7 * 24 * 60 * 60 * 1000
+      })
     .json(
         new ApiResponse(200, {captain, accessToken}, "Captain logged in successfully!")
     )
@@ -96,8 +105,8 @@ const logoutCaptain = asyncHandler(async (req, res)=>{
 
  
      return res.status(200)
-     .clearCookie("refreshToken", options)
-     .clearCookie("accessToken", options)
+     .clearCookie("captain_refreshToken", options)
+     .clearCookie("captain_accessToken", options)
      .json(
         new ApiResponse(200, {}, "User logged out successfully!")
      )
@@ -120,4 +129,50 @@ const captainProfile = asyncHandler(async(req, res)=>{
    }
 });
 
-export {registerCaptain, loginCaptain, logoutCaptain, captainProfile};
+const regenerateAccessTokenForCaptain = asyncHandler(async(req,res)=>{
+     try {
+          const incomingToken = req.cookies?.captain_refreshToken;
+          console.log('incoming refresh token inside captain', incomingToken)
+       
+          if(!incomingToken){
+          throw new ApiError(401, "Unauthorised request");
+          }
+       
+          const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
+          console.log('decoded token inside captain', decodedToken)
+       
+          const captain = await Captain.findById(decodedToken?._id).select('+refreshToken');
+          console.log('captain', captain)
+       
+          if(!captain){
+             throw new ApiError(401, "Unauthorised request");
+          }
+          console.log('incomingToken inside captain', incomingToken, 'user.refreshToken',  captain?.refreshToken)
+          if(incomingToken !== captain?.refreshToken){
+            console.log('incomingToken inside captain', incomingToken, 'user.refreshToken',  captain?.refreshToken)
+             throw new ApiError(401, "Refresh token expired or used");
+          }
+          const accessToken = captain.generateAccessToken();
+          console.log('generated access token inside captain', accessToken)
+       
+          const options = {
+             httpOnly : true,
+             secure : true,
+             maxAge :1 * 60 * 1000
+          }
+       
+          return res.status(200)
+          .cookie("captain_accessToken", accessToken, options)
+          .json(
+            new ApiResponse(200,
+             {accessToken},
+             "Access token regenerated successfully!"
+       
+            )
+          )
+        } catch (error) {
+         throw new ApiError(401, error?.message || "invalid refresh token")
+        }
+})
+
+export {registerCaptain, loginCaptain, logoutCaptain, captainProfile, regenerateAccessTokenForCaptain};
