@@ -22,7 +22,8 @@ const registerUser = asyncHandler(async (req, res)=>{
     const options = {
         httpOnly : true,
         secure : true,
-        maxAge: 1 * 60 * 1000 
+        maxAge: 24 * 60 * 60 * 1000,
+        path : '/api/v1/users' 
     }
     
     return res.status(200)
@@ -30,7 +31,8 @@ const registerUser = asyncHandler(async (req, res)=>{
    .cookie("user_refreshToken", refreshToken, {
       httpOnly : true,
       secure : true,
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path : '/api/v1/users'
    })
    .json(
    new ApiResponse(200,
@@ -63,7 +65,8 @@ const loginUser = asyncHandler(async (req, res)=>{
     const options = {
         httpOnly : true,
         secure : true,
-        maxAge: 1 * 60 * 1000  //1 minute
+        maxAge: 24 * 60 * 60 * 1000, //1 minute
+        path : '/api/v1/users'
     }
    
     return res.status(200)
@@ -71,7 +74,8 @@ const loginUser = asyncHandler(async (req, res)=>{
     .cookie("user_refreshToken", refreshToken, {
       httpOnly : true,
         secure : true,
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        path : '/api/v1/users'
     })
     .json(
        new ApiResponse(200,
@@ -134,7 +138,6 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
       }
    
       const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
-      console.log('decoded token inside user', decodedToken)
    
       const user = await User.findById(decodedToken?._id).select("+refreshToken")
 
@@ -142,7 +145,6 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
          throw new ApiError(401, "Unauthorised request");
       }
       if(incomingToken !== user?.refreshToken){
-         console.log('incomingToken inside user', incomingToken, 'user.refreshToken',  user?.refreshToken)
          throw new ApiError(401, "Refresh token expired or used");
       }
       const accessToken = user.generateAccessToken();
@@ -151,7 +153,8 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
       const options = {
          httpOnly : true,
          secure : true,
-         maxAge :1 * 60 * 1000
+         maxAge :24 * 60 * 60 * 1000,
+         path : '/api/v1/users/'
       }
    
       return res.status(200)

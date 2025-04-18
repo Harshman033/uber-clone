@@ -5,10 +5,8 @@ import { asyncHandler } from '../src/utils/asyncHandler.js';
 import { Captain } from '../src/models/captain.model.js';
 
 export const verifyJwt = asyncHandler(async (req, res, next) =>{
-    console.log('req.cookies inside jwtVerify', req.cookies)
 try {
     const token = req.cookies?.user_accessToken || req.header("Authorization")?.replace("Bearer ", "");
-    console.log('access token inside verify Jwt', token)
 
     if(!token)throw new ApiError(401, "Unauthorized request");
    

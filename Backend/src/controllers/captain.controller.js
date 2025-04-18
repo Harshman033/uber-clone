@@ -22,7 +22,8 @@ const registerCaptain = asyncHandler(async (req, res)=>{
     const options = {
         httpOnly : true,
         secure : true,
-        maxAge :24 * 60 * 60 * 1000
+        maxAge :24 * 60 * 60 * 1000,
+         path : '/api/v1/captains'
     }
     
     return res.status(200)
@@ -30,12 +31,13 @@ const registerCaptain = asyncHandler(async (req, res)=>{
    .cookie("captain_refreshToken", refreshToken, {
     httpOnly : true,
       secure : true,
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path : '/api/v1/captains'
   })
    .json(
    new ApiResponse(200,
       {
-         captain, accessToken
+         captain
       },
       "Captain registered successfully!"
    )
@@ -68,7 +70,8 @@ const loginCaptain = asyncHandler(async (req, res) =>{
     const options = {
         httpOnly : true,
         secure : true,
-        maxAge :24 * 60 * 60 * 1000
+        maxAge :24 * 60 * 60 * 1000,
+        path : '/api/v1/captains'
     }
 
     return res.status(200)
@@ -76,10 +79,11 @@ const loginCaptain = asyncHandler(async (req, res) =>{
     .cookie("captain_refreshToken", refreshToken, {
         httpOnly : true,
           secure : true,
-          maxAge: 7 * 24 * 60 * 60 * 1000
+          maxAge: 7 * 24 * 60 * 60 * 1000,
+           path : '/api/v1/captains'
       })
     .json(
-        new ApiResponse(200, {captain, accessToken}, "Captain logged in successfully!")
+        new ApiResponse(200, {captain}, "Captain logged in successfully!")
     )
 
 });
@@ -132,7 +136,7 @@ const captainProfile = asyncHandler(async(req, res)=>{
 const regenerateAccessTokenForCaptain = asyncHandler(async(req,res)=>{
      try {
           const incomingToken = req.cookies?.captain_refreshToken;
-          console.log('incoming refresh token inside captain', incomingToken)
+          console.log('inside captain token gen')
        
           if(!incomingToken){
           throw new ApiError(401, "Unauthorised request");
@@ -158,7 +162,8 @@ const regenerateAccessTokenForCaptain = asyncHandler(async(req,res)=>{
           const options = {
              httpOnly : true,
              secure : true,
-             maxAge :1 * 60 * 1000
+             maxAge :24 * 60 * 60 * 1000,
+             path : '/api/v1/captains'
           }
        
           return res.status(200)

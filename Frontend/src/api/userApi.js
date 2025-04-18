@@ -9,7 +9,10 @@ let isRefreshing = false;
 
 //helper to check if the path needs auth
 const requiresAuth = (url) => {
-    return url.includes('/users/user-home') || url.includes('/users/me');
+    console.log("User API checking URL:", url);
+    const needsAuth =  url.includes('/users/user-home') || url.includes('/users/me');
+    console.log("Needs auth:", needsAuth);
+    return needsAuth
 };
 
 // Request interceptor to prevent unnecessary token refresh
