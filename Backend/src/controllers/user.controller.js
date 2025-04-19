@@ -130,8 +130,10 @@ const userProfile = asyncHandler(async (req, res) => {
 })
 
 const regenerateAccessToken = asyncHandler(async (req, res) => {
+   console.log('inside user token gen')
     try {
       const incomingToken = req.cookies?.user_refreshToken;
+      console.log("refreshToken in user", incomingToken)
    
       if(!incomingToken){
       throw new ApiError(401, "Unauthorised request");
@@ -144,6 +146,9 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
       if(!user){
          throw new ApiError(401, "Unauthorised request");
       }
+
+      console.log("user own token", user?.refreshToken);
+      
       if(incomingToken !== user?.refreshToken){
          throw new ApiError(401, "Refresh token expired or used");
       }
