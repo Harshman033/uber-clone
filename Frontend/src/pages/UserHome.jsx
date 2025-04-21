@@ -3,36 +3,47 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import LocationSearchPanel from '../components/LocationSearchPanel';
-import { BsChevronCompactDown } from "react-icons/bs";
 import VehiclePanel from '../components/VehiclePanel';
-
+import TripForm from '../components/TripForm';
+import ConfirmRidePanel from '../components/ConfirmRidePanel';
+import LookingForDriverPanel from '../components/LookingForDriverPanel';
 
 function UserHome() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showLocationPanel, setShowLocationPanel] = useState(true);
+  const [showConfirmRidePanel, setShowConfirmRidePanel] = useState(false);
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
+  const [activeField, setActiveField] = useState(null);
+  const [lookingForDriverPanel, setLookingForDriverPanel] = useState(false)
+  const [vehicle, setVehicle] = useState({});
   const formContainerRef = useRef(null);
   const locationPanelRef = useRef(null);
   const vehiclePanelRef = useRef(null);
+  const confirmRidePanelRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
   const handleLocationSelect = (location) => {
-    // If picking up location is empty, set it first
-    if (!pickup) {
+    if (activeField === 'pickup' && location === destination) {
+      alert("Pickup and destination cannot be the same.");
+      return;
+    }
+  
+    if (activeField === 'destination' && location === pickup) {
+      alert("Pickup and destination cannot be the same.");
+      return;
+    }
+    if (activeField === 'pickup') {
       setPickup(location);
-    } else {
-      // Otherwise set destination
+    } else if (activeField === 'destination') {
       setDestination(location);
     }
-    
-    // Show vehicle panel and hide location panel
+    setActiveField(null);
     setShowLocationPanel(false);
-    
-    // Animate the transition
+  
     gsap.to(locationPanelRef.current, {
       height: 0,
       opacity: 0,
@@ -43,17 +54,15 @@ function UserHome() {
           height: 'auto',
           opacity: 1,
           duration: 0.4,
-          ease: 'power3.out'
+          ease: 'power3.out',
         });
-      }
+      },
     });
   };
 
   const handleDownArrowClick = () => {
-    // Show location panel again
     setShowLocationPanel(true);
     
-    // Animate the transition
     gsap.to(vehiclePanelRef.current, {
       height: 0,
       opacity: 0,
@@ -72,6 +81,7 @@ function UserHome() {
 
   useGSAP(() => {
     if (isExpanded) {
+      if (!formContainerRef.current) return;
       gsap.to(formContainerRef.current, {
         height: '90vh',
         bottom: 0,
@@ -116,7 +126,9 @@ function UserHome() {
         ease: 'power3.inOut'
       });
     }
-  }, [isExpanded, showLocationPanel]);
+   
+    
+  }, [isExpanded, showLocationPanel, showConfirmRidePanel]);
 
   return (
     <div className='h-screen relative'>
@@ -125,66 +137,75 @@ function UserHome() {
         <img className='w-full h-screen object-cover' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_rbrCDbss3kRmbeiZoslsXiTdENOYg9iXCA&s" alt="map img" />
       </div>
       <div className='h-screen w-full absolute top-0 flex flex-col justify-end'>
-        <div
-          ref={formContainerRef}
-          className="absolute bg-white w-full p-6 bottom-0 overflow-auto"
-          style={{ maxHeight: isExpanded ? '90vh' : 'auto' }}
-        >
-          <form onSubmit={handleSubmit} className='relative'>
-            {isExpanded && (
-              <div className="flex justify-center mb-2">
-                <button
-                  onClick={() => setIsExpanded(false)}
-                  className="p-2 rounded-full hover:bg-gray-100"
-                >
-                  <BsChevronCompactDown className='h-8 w-full'></BsChevronCompactDown>
-                </button>
+        {!showConfirmRidePanel && (
+          <div
+            ref={formContainerRef}
+            className="absolute bg-white w-full p-6 bottom-0 overflow-auto"
+            style={{ maxHeight: isExpanded ? '90vh' : 'auto' }}
+          >
+            <form onSubmit={handleSubmit} className='relative'>
+              <TripForm 
+                pickup={pickup}
+                setPickup={setPickup}
+                destination={destination}
+                setDestination={setDestination}
+                isExpanded={isExpanded}
+                setIsExpanded={setIsExpanded}
+                setShowLocationPanel={setShowLocationPanel}
+                setActiveField={setActiveField}
+              />
+    
+              <div
+                ref={locationPanelRef}
+                className="mt-4 bg-white overflow-hidden opacity-0"
+                style={{ height: 0, display: showLocationPanel ? 'block' : 'none' }}
+              >
+                <LocationSearchPanel onLocationSelect={handleLocationSelect} />
               </div>
-            )}
-            <div className="flex flex-col gap-4 mt-4 w-full bg-white">
-              <h4 className='text-2xl font-semibold'>Find a trip</h4>
-              {!isExpanded && (<div className="line absolute h-16 w-[0.2rem] top-[45%] left-3 bg-gray-900"></div>)}
-              <input
-                type="text"
-                placeholder="Add a pick-up location"
-                className="bg-gray-100 px-8 py-2 rounded-md w-full"
-                onFocus={() => {
-                  setIsExpanded(true);
-                  setShowLocationPanel(true);
-                }}
-                onChange={(e) => setPickup(e.target.value)}
-                value={pickup}
-              />
-              <input
-                type="text"
-                placeholder="Enter your destination"
-                className="bg-gray-100 px-8 py-2 rounded-md w-full"
-                onFocus={() => {
-                  setIsExpanded(true);
-                  setShowLocationPanel(true);
-                }}
-                onChange={(e) => setDestination(e.target.value)}
-                value={destination}
-              />
-            </div>
-  
-            <div
-              ref={locationPanelRef}
-              className="mt-4 bg-white overflow-hidden opacity-0"
-              style={{ height: 0, display: showLocationPanel ? 'block' : 'none' }}
-            >
-              <LocationSearchPanel onLocationSelect={handleLocationSelect} />
-            </div>
-            
-            <div
-              ref={vehiclePanelRef}
-              className="mt-4 bg-white overflow-hidden opacity-0"
-              style={{ height: 0, display: !showLocationPanel ? 'block' : 'none' }}
-            >
-              <VehiclePanel onDownArrowClick={handleDownArrowClick} />
-            </div>
-          </form>
-        </div>
+              
+              <div
+                ref={vehiclePanelRef}
+                className="mt-2 bg-white overflow-hidden opacity-0"
+                style={{ height: 0, display: !showLocationPanel ? 'block' : 'none' }}
+              >
+                <VehiclePanel 
+                  onDownArrowClick={handleDownArrowClick} 
+                  pickUp={pickup} 
+                  destination={destination} 
+                  setVehicle={setVehicle} 
+                  setShowConfirmRidePanel={setShowConfirmRidePanel} 
+                />
+              </div>
+            </form>
+          </div>
+        )}
+        
+        {!lookingForDriverPanel && 
+        <div
+          ref={confirmRidePanelRef}
+          className={`absolute bottom-0 left-0 right-0 bg-white z-50 overflow-auto ${showConfirmRidePanel ? 'block' : 'hidden'}`}
+          style={{ 
+            height: '90vh',
+            opacity: showConfirmRidePanel ? 1 : 0, 
+            transform: showConfirmRidePanel ? 'translateY(0)' : 'translateY(100%)'
+          }}
+        >
+         <ConfirmRidePanel  {...{ pickup, destination, vehicle, setLookingForDriverPanel, setShowConfirmRidePanel}}  />
+        </div>}
+
+        {lookingForDriverPanel &&
+        <div
+         ref={confirmRidePanelRef}
+         className={`absolute bottom-0 left-0 right-0 bg-white z-50 overflow-auto ${lookingForDriverPanel ? 'block' : 'hidden'}`}
+         style={{ 
+           height: '90vh',
+           opacity: showConfirmRidePanel ? 1 : 0, 
+           transform: showConfirmRidePanel ? 'translateY(0)' : 'translateY(100%)'
+         }}
+        >
+       
+          <LookingForDriverPanel {...{ pickup, destination, vehicle, setLookingForDriverPanel}} />
+        </div>}
       </div>
     </div>
   );

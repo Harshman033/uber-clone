@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import {body} from 'express-validator'
-import { verifyJwt, verifyJwtForCaptain } from '../../middlewares/auth.middleware.js';
+import {verifyJwtForCaptain } from '../../middlewares/auth.middleware.js';
 import { captainProfile, loginCaptain, logoutCaptain, registerCaptain, regenerateAccessTokenForCaptain} from '../controllers/captain.controller.js';
 
 const router = Router();
