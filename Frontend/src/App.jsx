@@ -9,6 +9,8 @@ import ProtectedRoute from './components/ProtectedWrapper'
 import UserHome from './pages/UserHome'
 import CaptainProtectedRoute from './components/CaptainProtectedWrapper'
 import CaptainHome from './pages/CaptainHome'
+import RideDetails from './components/RideDetails'
+import CaptainRiding from './pages/CaptainRiding'
 
 function App() {
   return (
@@ -21,6 +23,7 @@ function App() {
       <Route path='/captain-register' element={<CaptainRegister />} />
       <Route path='/captain-login' element={<CaptainLogin />} />
       <Route path='/captain-home' element={<CaptainProtectedRoute> <CaptainHome />  </CaptainProtectedRoute>} />
+      <Route path='/ride-map' element={<CaptainProtectedRoute> <CaptainRiding />  </CaptainProtectedRoute>} />
       </Routes>
      
     </div>

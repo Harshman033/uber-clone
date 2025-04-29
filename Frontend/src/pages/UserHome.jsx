@@ -160,7 +160,7 @@ function UserHome() {
                 className="mt-4 bg-white overflow-hidden opacity-0"
                 style={{ height: 0, display: showLocationPanel ? 'block' : 'none' }}
               >
-                <LocationSearchPanel onLocationSelect={handleLocationSelect} />
+                <LocationSearchPanel onLocationSelect={handleLocationSelect} pickup={pickup} destination={destination} />
               </div>
               
               <div
