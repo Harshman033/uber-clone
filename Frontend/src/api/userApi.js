@@ -10,7 +10,7 @@ let isRefreshing = false;
 //helper to check if the path needs auth
 const requiresAuth = (url) => {
     console.log("User API checking URL:", url);
-    const needsAuth =  url.includes('/users/user-home') || url.includes('/users/me');
+    const needsAuth =  url.includes('/users/user-home') || url.includes('/users/me') || url.includes('/users/rides/create-ride') ;
     console.log("Needs auth:", needsAuth);
     return needsAuth
 };

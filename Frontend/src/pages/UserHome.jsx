@@ -11,11 +11,14 @@ import LookingForDriverPanel from '../components/LookingForDriverPanel';
 function UserHome() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showLocationPanel, setShowLocationPanel] = useState(true);
+  const [pickupCoords, setPickupCoords] = useState(null);
+  const [destinationCoords, setDestinationCoords] = useState(null);
   const [showConfirmRidePanel, setShowConfirmRidePanel] = useState(false);
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
-  const [activeField, setActiveField] = useState(null);
+  const [activeField, setActiveField] = useState('');
   const [lookingForDriverPanel, setLookingForDriverPanel] = useState(false)
+  const [fare, setFare] = useState({});
   const [vehicle, setVehicle] = useState({});
   const formContainerRef = useRef(null);
   const locationPanelRef = useRef(null);
@@ -27,6 +30,7 @@ function UserHome() {
   };
 
   const handleLocationSelect = (location) => {
+      const { name, lat, lon } = location;
     if (activeField === 'pickup' && location === destination) {
       alert("Pickup and destination cannot be the same.");
       return;
@@ -37,9 +41,11 @@ function UserHome() {
       return;
     }
     if (activeField === 'pickup') {
-      setPickup(location);
+        setPickup(name);
+        setPickupCoords([parseFloat(lon), parseFloat(lat)]);
     } else if (activeField === 'destination') {
-      setDestination(location);
+       setDestination(name);
+      setDestinationCoords([parseFloat(lon), parseFloat(lat)]);
     }
     setActiveField(null);
     setShowLocationPanel(false);
@@ -160,7 +166,7 @@ function UserHome() {
                 className="mt-4 bg-white overflow-hidden opacity-0"
                 style={{ height: 0, display: showLocationPanel ? 'block' : 'none' }}
               >
-                <LocationSearchPanel onLocationSelect={handleLocationSelect} pickup={pickup} destination={destination} />
+                <LocationSearchPanel onLocationSelect={handleLocationSelect} pickup={pickup} destination={destination} activeField={activeField} setActiveField={setActiveField} />
               </div>
               
               <div
@@ -170,10 +176,12 @@ function UserHome() {
               >
                 <VehiclePanel 
                   onDownArrowClick={handleDownArrowClick} 
-                  pickUp={pickup} 
+                  pickup={pickup} 
                   destination={destination} 
                   setVehicle={setVehicle} 
                   setShowConfirmRidePanel={setShowConfirmRidePanel} 
+                   coordinates={[pickupCoords, destinationCoords]}
+                   setFare={setFare}
                 />
               </div>
             </form>
@@ -190,7 +198,7 @@ function UserHome() {
             transform: showConfirmRidePanel ? 'translateY(0)' : 'translateY(100%)'
           }}
         >
-         <ConfirmRidePanel  {...{ pickup, destination, vehicle, setLookingForDriverPanel, setShowConfirmRidePanel}}  />
+         <ConfirmRidePanel  {...{ pickup, destination, vehicle, setLookingForDriverPanel, setShowConfirmRidePanel, fare}}  />
         </div>}
 
         {lookingForDriverPanel &&

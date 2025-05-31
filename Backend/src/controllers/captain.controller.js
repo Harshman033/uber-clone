@@ -27,6 +27,8 @@ const registerCaptain = asyncHandler(async (req, res)=>{
     }
     
     return res.status(200)
+    .clearCookie("user_accessToken")
+    .clearCookie("user_refreshToken")
    .cookie("captain_accessToken", accessToken, options)
    .cookie("captain_refreshToken", refreshToken, {
     httpOnly : true,
@@ -75,6 +77,8 @@ const loginCaptain = asyncHandler(async (req, res) =>{
     }
 
     return res.status(200)
+    .clearCookie("user_accessToken")
+    .clearCookie("user_refreshToken")
     .cookie("captain_accessToken", accessToken, options)
     .cookie("captain_refreshToken", refreshToken, {
         httpOnly : true,
@@ -167,6 +171,8 @@ const regenerateAccessTokenForCaptain = asyncHandler(async(req,res)=>{
           }
        
           return res.status(200)
+          .clearCookie("user_accessToken")
+          .clearCookie("user_refreshToken")
           .cookie("captain_accessToken", accessToken, options)
           .json(
             new ApiResponse(200,

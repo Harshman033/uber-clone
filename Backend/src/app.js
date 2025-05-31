@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { router as userRouter} from './routes/user.routes.js';
 import { router as captainRouter } from './routes/captain.routes.js';
+import { router as mapRouter } from './routes/map.routes.js';
+import { router as rideRouter } from './routes/ride.routes.js';
 import cookieParser from 'cookie-parser'
 
 
@@ -27,5 +29,10 @@ app.use('/api/v1/users', userRouter)
 
 
 app.use('/api/v1/captains', captainRouter)
+
+
+app.use('/api/v1/maps', mapRouter)
+
+app.use('/api/v1/users/rides',  rideRouter)
 
 export default app;

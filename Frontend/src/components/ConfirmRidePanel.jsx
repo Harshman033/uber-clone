@@ -4,7 +4,10 @@ import { RiMapPinRangeFill } from "react-icons/ri";
 import { IoIosSquare } from "react-icons/io";
 import { BsCreditCardFill } from "react-icons/bs";
 
-const ConfirmRidePanel = ({ setShowConfirmRidePanel, pickup, destination, vehicle, setLookingForDriverPanel}) => {
+const ConfirmRidePanel = ({ setShowConfirmRidePanel, pickup, destination, vehicle, setLookingForDriverPanel, fare}) => {
+  
+  const vehicleFare = fare?.[vehicle?.name];
+  console.log("vehicleFare:", vehicleFare);
   return (
     <div className="p-5">
       <div className="flex justify-center mb-2">
@@ -40,7 +43,7 @@ const ConfirmRidePanel = ({ setShowConfirmRidePanel, pickup, destination, vehicl
         <div className='flex px-2 py-2'>
           <BsCreditCardFill className="mt-1 mr-2 text-gray-700" />
           <div>
-            <h2 className='font-semibold'>${vehicle?.price || "67"}</h2>
+            <h2 className='font-semibold'>${vehicleFare}</h2>
             <h3 className='text-gray-700 text-sm'>cash</h3>
           </div>
         </div>

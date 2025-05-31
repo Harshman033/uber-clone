@@ -8,6 +8,8 @@ import captainApi from '../api/captainApi';
 import RidePopUp from '../components/RidePopUp';
 import RideDetails from '../components/RideDetails';
 import { gsap } from 'gsap';
+import { CaptainContext } from '../context/CaptainContext';
+import { useContext } from 'react';
 
 const CaptainHome = () => {
   const [captain, setCaptain] = useState();
@@ -155,6 +157,8 @@ const CaptainHome = () => {
     
     detailsTimeline.current.play();
   };
+
+  const {captainDetails} = useContext(CaptainContext);
   
   return (
     <div className='h-screen relative'>

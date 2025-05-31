@@ -17,6 +17,7 @@ function CaptainLogin() {
   const submitHandler = async (e)=>{
    e.preventDefault();
    const captain = {email, password}
+   setCaptain(captain)
    await captainApi.post('/captains/login', captain);
    const res = await captainApi.get('/captains/me');
    

@@ -1,9 +1,11 @@
 import app from './app.js';
 import http from 'http'
 import { dbConnect } from './db/db.js';
-
+import { initializeSocket } from './socket.js';
 const port = process.env.PORT || 8080;
 const server = http.createServer(app);
+
+initializeSocket(server);
 
 dbConnect()
 .then(()=>{
